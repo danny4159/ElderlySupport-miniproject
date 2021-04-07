@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+							"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.volunteer">
+	<select id="selectVolunteer"
+		resultType="com.danny.elder.bean.Volunteer" parameterType="String">
+		<![CDATA[
+		select * from volunteer
+		where
+		v_id=#{v_id}
+		]]>
+	</select>
+	<select id="selectVolunteerList"
+		resultType="com.danny.elder.bean.Volunteer">
+		<![CDATA[
+		select * from volunteer
+		]]>
+	</select>
+		
+	<select id="selectVolunteerListMatch"
+		resultType="com.danny.elder.bean.Volunteer" parameterType="String">
+		<![CDATA[
+		select v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2,sum(point) as point
+		from( select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 3 as point
+			  from volunteer 
+			  where v_address = ( select e_address
+								  from elderly
+								  where e_id = #{e_id})
+			  union	
+			  select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 3 as point
+			  from volunteer 
+			  where v_period = ( select e_period
+								 from elderly
+								 where e_id = #{e_id})
+			  union	
+			  select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 3 as point
+			  from volunteer 
+			  where v_sex = ( select e_sex
+							  from elderly
+							  where e_id = #{e_id})
+			  union	
+			  select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 3 as point
+			  from volunteer 
+			  where v_expertise1 = ( select e_hope1
+									 from elderly
+									 where e_id = #{e_id})
+			  union	
+			  select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 2 as point
+			  from volunteer 
+			  where v_expertise1 = ( select e_hope2
+									 from elderly
+									 where e_id = #{e_id})
+			  union	
+			  select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 2 as point
+			  from volunteer 
+			  where v_expertise2 = ( select e_hope1
+									 from elderly
+									 where e_id = #{e_id})
+			  union	
+			  select distinct v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2, 1 as point
+			  from volunteer 
+			  where v_expertise2 = ( select e_hope2
+									 from elderly
+									 where e_id = #{e_id}))
+		group by v_id,v_name,v_address,v_period,v_sex,v_expertise1,v_expertise2
+		order by point desc
+		]]>
+	</select>
+
+	<insert id="insertVolunteer"
+		parameterType="com.danny.elder.bean.Volunteer">
+		<![CDATA[
+		insert into volunteer(v_id,v_birth_date,v_name,v_address,v_tel_no,v_sex,v_period,v_expertise1,v_expertise2,point)
+		values(#{v_id},#{v_birth_date},#{v_name},#{v_address},#{v_tel_no},#{v_sex},#{v_period},#{v_expertise1},#{v_expertise2},#{point})
+		]]>
+	</insert>
+	
+	<update id="updateVolunteer" parameterType="com.danny.elder.bean.Volunteer">
+		<![CDATA[
+		update volunteer
+		set v_sex = #{v_sex},
+			v_tel_no = #{v_tel_no},
+			v_period = to_date(#{v_period},'RR/MM/DD'),
+			v_address = #{v_address},
+			v_birth_date = to_date(#{v_birth_date},'RR/MM/DD'),
+			v_name = #{v_name},
+			v_expertise1 = #{v_expertise1},
+			v_expertise2 = #{v_expertise2}
+		where v_id=#{v_id}
+		]]>
+	</update>
+	
+	<update id="updateVolunteerEId" parameterType="com.danny.elder.bean.Volunteer">
+		<![CDATA[
+		update volunteer
+		set e_id=#{e_id}
+		where v_id=#{v_id}
+		]]>
+	</update>
+	
+	<update id="updateVolunteerPoint">
+		<![CDATA[
+		update volunteer
+		set point=0
+		]]>
+	</update>
+
+</mapper>

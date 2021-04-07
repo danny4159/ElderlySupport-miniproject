@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+							"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.elderly">
+	<select id="selectElderly"
+		resultType="com.danny.elder.bean.Elderly" parameterType="String">
+		<![CDATA[
+		select * from elderly
+		where
+		e_id=#{e_id}
+		]]>
+	</select>
+	<select id="selectElderlyList"
+		resultType="com.danny.elder.bean.Elderly">
+		<![CDATA[
+		select * from elderly 
+		]]>
+	</select>
+
+	<!-- 봉사자가 매칭되지 않은 노인들 select -->
+	<select id="selectElderlyListVIdNull"
+		resultType="com.danny.elder.bean.Elderly">
+		<![CDATA[
+		select * from elderly 
+		where v_id is null
+		]]>
+	</select>
+	<insert id="insertElderly"
+		parameterType="com.danny.elder.bean.Elderly">
+		<![CDATA[
+		insert into elderly(e_id,e_income,e_sex,e_tel_no,e_emergency_no,e_period,e_address,e_birth_date,e_name,e_hope1,e_hope2)
+		values(#{e_id},#{e_income},#{e_sex},#{e_tel_no},#{e_emergency_no},to_date(#{e_period},'RR/MM/DD'),#{e_address},to_date(#{e_birth_date},'RR/MM/DD'),#{e_name},#{e_hope1},#{e_hope2})
+		]]>
+		<!-- 여기아직 덜 작성함 -->
+	</insert>
+	<update id="updateElderly" parameterType="com.danny.elder.bean.Elderly">
+		<![CDATA[
+		update Elderly
+		set e_income = #{e_income},
+			e_sex = #{e_sex},
+			e_tel_no = #{e_tel_no},
+			e_emergency_no = #{e_emergency_no},
+			e_period = to_date(#{e_period},'RR/MM/DD'),
+			e_address = #{e_address},
+			e_birth_date = to_date(#{e_birth_date},'RR/MM/DD'),
+			e_name = #{e_name},
+			e_hope1 = #{e_hope1},
+			e_hope2 = #{e_hope2}
+		where e_id=#{e_id}
+		]]>
+		<!-- 여기에 파라미터가 두개 들어와야하는건가 ..?? -->
+	</update>
+
+	<update id="updateElderlyVId"
+		parameterType="com.danny.elder.bean.Elderly">
+		<![CDATA[
+		update Elderly
+		set v_id=#{v_id}
+		where e_id=#{e_id}
+		]]>
+		<!-- 여기에 파라미터가 두개 들어와야하는건가 ..?? -->
+	</update>
+
+</mapper>
